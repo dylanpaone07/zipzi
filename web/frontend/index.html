@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zipzi — Encontrá tu equipo maestro</title>
+  <meta name="description" content="Zipzi conecta personas por visión, intereses y lo que quieren construir. Encontrá tu co-founder ideal.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..700&family=Outfit:wght@300..700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="logo" href="#/descubrir" aria-label="Zipzi — inicio">Zipzi</a>
+      <nav class="main-nav" aria-label="Navegación principal">
+        <a href="#/descubrir" data-nav="descubrir">Descubrir</a>
+        <a href="#/conexiones" data-nav="conexiones">Mis conexiones</a>
+        <a href="#/perfil" data-nav="perfil">Mi perfil</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="vista" class="vista" aria-live="polite"></main>
+
+  <div id="modal-root"></div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
