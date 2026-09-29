@@ -724,7 +724,11 @@ function quizStepHTML() {
     ${chipGroupHTML("Rubro", "rubro", meta.rubros || [], d.rubro)}
     ${chipGroupHTML("Orientación", "orientacion", meta.orientaciones || [], d.orientacion)}
     <div class="field"><label for="f-busco">¿A quién buscás?</label>
-      <textarea id="f-busco" data-k="quien_busco" placeholder="Describí a tu socio/a ideal…">${val("quien_busco")}</textarea></div>`;
+      <textarea id="f-busco" data-k="quien_busco" placeholder="Describí a tu socio/a ideal…">${val("quien_busco")}</textarea></div>
+    <div class="field"><label for="f-objetivos">Tus objetivos (uno por línea, máx. 5)</label>
+      <textarea id="f-objetivos" data-lista="objetivos_lista" placeholder="Ej: Lanzar un MVP en 6 meses">${esc((d.objetivos_lista || []).join("\n"))}</textarea></div>
+    <div class="field"><label for="f-proyectos">Tus proyectos (uno por línea, máx. 5)</label>
+      <textarea id="f-proyectos" data-lista="proyectos_lista" placeholder="Ej: App de finanzas personales">${esc((d.proyectos_lista || []).join("\n"))}</textarea></div>`;
 
   if (q.step === 2) return `
     ${chipGroupHTML("¿Qué habilidades ofrecés?", "skills_ofrece", meta.skills || [], d.skills_ofrece)}
@@ -755,6 +759,8 @@ function quizStepHTML() {
     ["Rubro", d.rubro.join(", ")], ["Orientación", d.orientacion.join(", ")],
     ["Ofrecés", d.skills_ofrece.join(", ")], ["Buscás", d.skills_busca.join(", ")],
     ["Intereses", d.intereses.join(", ")], ["Horizonte", d.horizonte_meses ? d.horizonte_meses + " meses" : ""],
+    ["Objetivos", (d.objetivos_lista || []).join(", ")],
+    ["Proyectos", (d.proyectos_lista || []).join(", ")],
   ].filter(([, v]) => v);
   return `
     <p style="color:var(--muted)">Así se va a ver tu perfil. Si algo no te cierra, volvé atrás y ajustalo.</p>
@@ -822,6 +828,16 @@ function wireQuizInputs() {
     });
   });
 
+  // textareas de listas (una línea = un ítem, máx. 5)
+  vista.querySelectorAll("[data-lista]").forEach((el) => {
+    const k = el.dataset.lista;
+    const parse = () => {
+      d[k] = el.value.split("\n").map((s) => s.trim()).filter(Boolean).slice(0, 5);
+    };
+    el.addEventListener("input", parse);
+    parse();
+  });
+
   // chips multi-select
   vista.querySelectorAll("[data-group]").forEach((btn) => {
     btn.addEventListener("click", () => {
@@ -886,14 +902,12 @@ function quizToPayload() {
     skills_ofrece: d.skills_ofrece,
     skills_busca: d.skills_busca,
     intereses: d.intereses,
-    rasgos: {
-      apetito_riesgo: d.rasgos.apetito_riesgo,
-      estilo_decision: d.rasgos.estilo_decision,
-      confianza: d.rasgos.confianza,
-      energia: d.rasgos.energia,
-      disciplina: d.rasgos.disciplina,
-      creatividad: d.rasgos.creatividad,
-    },
+    apetito_riesgo: d.rasgos.apetito_riesgo,
+    estilo_decision: d.rasgos.estilo_decision,
+    confianza: d.rasgos.confianza,
+    energia: d.rasgos.energia,
+    disciplina: d.rasgos.disciplina,
+    creatividad: d.rasgos.creatividad,
     inversion_dinero: d.inversion_dinero,
     horizonte_meses: num(d.horizonte_meses),
     objetivos_lista: d.objetivos_lista,
@@ -905,6 +919,10 @@ function quizToPayload() {
 async function submitQuiz(btn) {
   const d = state.quiz.data;
   if (!d.nombre.trim()) { toast("Poné tu nombre para crear el perfil"); return; }
+  if (!d.objetivos_lista.length || !d.proyectos_lista.length) {
+    toast("Agregá al menos un objetivo y un proyecto (paso 2: Tu visión)");
+    return;
+  }
   btn.disabled = true;
   btn.textContent = "Creando tu perfil…";
   try {
